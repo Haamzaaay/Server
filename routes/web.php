@@ -1,8 +1,14 @@
 <?php
 
+use App\Class\task;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\OAuthAccessToken;
+use Illuminate\Support\Facades\Http;
+use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
+use Laravel\Passport\Passport;
+use Laravel\Passport\TokenRepository;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+
     return view('welcome');
 });
 
@@ -25,8 +32,13 @@ Route::get('/dashboard', function () {
 
 
 Route::get('/dashboard/clients', function (Request $request) {
+
+
+    $client = Passport::client()
+        ->where('user_id', $request->user()->getKey())
+        ->orderBy('name', 'asc')->get();
     return view('clients', [
-        'clients' => $request->user()->clients
+        'clients' => $client,
     ]);
 })->middleware(['auth'])->name('dashboard_client');
 
